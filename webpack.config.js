@@ -26,13 +26,13 @@ const common = merge([
             }),
         ],
     },
-    parts.loadCss(),
 ]);
 
 function production(){
     return merge([
         common, 
         parts.lintJs({ include: PATHS.app }),
+        parts.extractCss({ use: ['css-loader', 'sass-loader'] })
     ]);
 }
 
@@ -54,6 +54,7 @@ function development(){
                 emitWarning: true, //emit warnings over errors to avoid crashing HMR on error
             },
         }),
+        parts.loadCss(),
     ]);  
 };
 

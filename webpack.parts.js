@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 exports.devServer = function({ host, port }){
     return{
@@ -42,12 +43,34 @@ exports.loadCss = function({ include, exclude } = {}){
         module: {
             rules: [
                 {
-                    test: /\.css$/,
+                    test: /\.scss$/,
                     include,
                     exclude,
                     use: [ 'style-loader', 'css-loader', 'sass-loader' ],
                 },
             ],
         },
+    };
+};
+
+exports.extractCss = function({ include, exclude, use }) {
+    return {
+        module:{
+            rules: [
+                {
+                    test: /\.scss$/,
+                    include,
+                    exclude,
+                    use: ExtractTextPlugin.extract({
+                        use: use,
+                        fallback: 'style-loader',
+                    }),
+                },
+            ],
+        },
+        plugins: [
+            //Output extracted CSS to file
+            new ExtractTextPlugin('[name].css'),
+        ],
     };
 };

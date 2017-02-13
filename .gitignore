@@ -3,5 +3,6 @@
 /*.log
 /node_modules
 /dist
+/build
 /bower_components
 /*.sublime-workspace
