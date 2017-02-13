@@ -18,8 +18,8 @@ const common = {
     },
     plugins:[
         new HtmlWebpackPlugin({
-            title: 'Webpack demo'
-        })
+            title: 'Webpack demo',
+        }),
     ],
 };
 
@@ -39,9 +39,40 @@ function development(){
             host: process.env.HOST, //defaults to localhost
             port: process.env.PORT, //defaults to 8080
         },
+        module: {
+            rules: [
+                {
+                    test: /\.js$/,
+                    enforce: 'pre', //gets executed before anything else
+
+                    loader: 'eslint-loader',
+                    options: {
+                        emitWarning: true,
+                    },
+                }
+            ],
+        },
         plugins:[
             new webpack.HotModuleReplacementPlugin(),
             new webpack.NamedModulesPlugin(), //named modules for debugging
+            new webpack.LoaderOptionsPlugin({
+                options: {
+                    eslint: {
+                        //fail only on errors
+                        failOnWarning: false,
+                        failOnError: true,
+
+                        //Disabled/enable autofix
+                        fix:false,
+
+                        //Output to jenkins compatible XML
+                        outputRecord:{
+                            filePath: 'checkstyle.xml',
+                            formatter: require('eslint/lib/formatters/checkstyle'),
+                        },
+                    },
+                },
+            }),
         ],
     };
 
