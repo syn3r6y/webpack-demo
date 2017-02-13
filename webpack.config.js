@@ -1,6 +1,9 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
+const merge = require('webpack-merge');
+
+const parts = require('./webpack.parts');
 
 const PATHS = {
     app: path.join (__dirname, 'app'),
@@ -24,67 +27,32 @@ const common = {
 };
 
 function production(){
-    return common;
+    return merge([
+        common, 
+        parts.lintJs({ include: PATHS.app }),
+    ]);
 }
 
 function development(){
-    const config = {
-        devServer:{
-            //HTML5 History API-based routing
-            historyApiFallback: true,
-            //don't refresh if HMR fails
-            hotOnly: true,
-            //display only errors
-            stats: 'errors-only',
-            host: process.env.HOST, //defaults to localhost
-            port: process.env.PORT, //defaults to 8080
-        },
-        module: {
-            rules: [
-                {
-                    test: /\.js$/,
-                    enforce: 'pre', //gets executed before anything else
-
-                    loader: 'eslint-loader',
-                    options: {
-                        emitWarning: true,
-                    },
-                }
+    return merge([
+        common,
+        {
+            plugins: [
+                new webpack.NamedModulesPlugin(),
             ],
         },
-        plugins:[
-            new webpack.HotModuleReplacementPlugin(),
-            new webpack.NamedModulesPlugin(), //named modules for debugging
-            new webpack.LoaderOptionsPlugin({
-                options: {
-                    eslint: {
-                        //fail only on errors
-                        failOnWarning: false,
-                        failOnError: true,
-
-                        //Disabled/enable autofix
-                        fix:false,
-
-                        //Output to jenkins compatible XML
-                        outputRecord:{
-                            filePath: 'checkstyle.xml',
-                            formatter: require('eslint/lib/formatters/checkstyle'),
-                        },
-                    },
-                },
-            }),
-        ],
-    };
-
-    return Object.assign(
-        {},
-        common,
-        config,
-        {
-            plugins: common.plugins.concat(config.plugins),
-        }
-    );
-}
+        parts.devServer({
+            host: process.env.HOST,
+            port: process.env.PORT,
+        }),
+        parts.lintJs({
+            include: PATHS.app,
+            options: {
+                emitWarning: true, //emit warnings over errors to avoid crashing HMR on error
+            },
+        }),
+    ]);  
+};
 
 module.exports = function(env){
     if(env === 'production'){
