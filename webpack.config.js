@@ -10,21 +10,24 @@ const PATHS = {
     build: path.join(__dirname, 'build'),
 };
 
-const common = {
-    //entry accepts a path of an object of entries
-    entry:{
-        app: PATHS.app,
+const common = merge([
+    {
+        //entry accepts a path of an object of entries
+        entry:{
+            app: PATHS.app,
+        },
+        output:{
+            path: PATHS.build,
+            filename: '[name].js',
+        },
+        plugins:[
+            new HtmlWebpackPlugin({
+                title: 'Webpack demo',
+            }),
+        ],
     },
-    output:{
-        path: PATHS.build,
-        filename: '[name].js',
-    },
-    plugins:[
-        new HtmlWebpackPlugin({
-            title: 'Webpack demo',
-        }),
-    ],
-};
+    parts.loadCss(),
+]);
 
 function production(){
     return merge([

@@ -1,4 +1,4 @@
-const webpack = require('webapck');
+const webpack = require('webpack');
 
 exports.devServer = function({ host, port }){
     return{
@@ -31,6 +31,21 @@ exports.lintJs = function({ include, exclude, options }){
                     enforce: 'pre', //process first
                     loader: 'eslint-loader',
                     options,
+                },
+            ],
+        },
+    };
+};
+
+exports.loadCss = function({ include, exclude } = {}){
+    return {
+        module: {
+            rules: [
+                {
+                    test: /\.css$/,
+                    include,
+                    exclude,
+                    use: [ 'style-loader', 'css-loader', 'sass-loader' ],
                 },
             ],
         },

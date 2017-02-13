@@ -1,4 +1,5 @@
 import component from './component';
+import './main.css';
 
 let demoComponent = component();
 
