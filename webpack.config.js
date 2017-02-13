@@ -41,6 +41,7 @@ function development(){
         },
         plugins:[
             new webpack.HotModuleReplacementPlugin(),
+            new webpack.NamedModulesPlugin(), //named modules for debugging
         ],
     };
 
